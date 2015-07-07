@@ -23,12 +23,14 @@ class Manager{
         $this->app = $app;
         $this->files = $files;
         $this->events = $events;
-        $this->config = $app['config']['laravel-translation-manager::config'];
+        $this->config = ['delete_enabled'=>false,'exclude_groups'=>[]];
+
     }
 
     public function missingKey($namespace, $group, $key)
     {
-        if(!in_array($group, $this->config['exclude_groups'])) {
+
+        if(!in_array($group, \Config::get('laravel-translation-manager::exclude_groups',[]))) {
             Translation::firstOrCreate(array(
                 'locale' => $this->app['config']['app.locale'],
                 'group' => $group,
@@ -177,10 +179,10 @@ class Manager{
     public function getConfig($key = null)
     {
         if($key == null) {
-            return $this->config;
+            return \Config::get('laravel-translation-manager::config',[]);
         }
         else {
-            return $this->config[$key];
+            return \Config::get('laravel-translation-manager::'.$key,[]);
         }
     }
 
